@@ -20,6 +20,7 @@ from keras.callbacks import ModelCheckpoint, CSVLogger
 
 parser = argparse.ArgumentParser()
 common_utils.add_common_arguments(parser)
+parser.add_argument('--target_repl_coef', type=float, default=0.0)
 parser.add_argument('--deep_supervision', dest='deep_supervision', action='store_true')
 parser.add_argument('--data', type=str, help='Path to the data of decompensation task',
                     default=os.path.join(os.path.dirname(__file__), '../../data/in-hospital-mortality/'))
@@ -62,7 +63,7 @@ cont_channels = [i for (i, x) in enumerate(discretizer_header) if x.find("->") =
 normalizer = Normalizer(fields=cont_channels)  # choose here which columns to standardize
 normalizer_state = args.normalizer_state
 if normalizer_state is None:
-    normalizer_state = 'decomp_ts{}.input_str:previous.n1e5.start_time:zero.normalizer'.format(args.timestep)
+    normalizer_state = 'ihm_ts{}.input_str:{}.start_time:zero.normalizer'.format(args.timestep, args.imputation)
     normalizer_state = os.path.join(os.path.dirname(__file__), normalizer_state)
 normalizer.load_params(normalizer_state)
 
@@ -112,12 +113,12 @@ model.summary()
 n_trained_chunks = 0
 if args.load_state != "":
     model.load_weights(args.load_state)
-    n_trained_chunks = int(re.match(".*chunk([0-9]+).*", args.load_state).group(1))
+    n_trained_chunks = int(re.match(".*epoch([0-9]+).*", args.load_state).group(1))
 
 
 # Read data
-train_raw = utils.load_data(train_reader, discretizer, normalizer, args.small_part)
-val_raw = utils.load_data(val_reader, discretizer, normalizer, args.small_part)
+train_raw = preprocessing.load_data(train_reader, discretizer, normalizer, args.small_part)
+val_raw = preprocessing.load_data(val_reader, discretizer, normalizer, args.small_part)
 
 if target_repl:
     T = train_raw[0][0].shape[0]
@@ -136,13 +137,13 @@ if target_repl:
 if args.mode == 'train':
 
     # Prepare training
-    path = os.path.join(args.output_dir, 'keras_states/' + model.final_name + '.chunk{epoch}.test{val_loss}.state')
+    path = os.path.join(args.output_dir, 'keras_states/' + model.final_name + '.epoch{epoch}.test{val_loss}.state')
 
-    metrics_callback = keras_utils.DecompensationMetrics(train_data_gen=train_data_gen,
-                                                         val_data_gen=val_data_gen,
-                                                         deep_supervision=args.deep_supervision,
-                                                         batch_size=args.batch_size,
-                                                         verbose=args.verbose)
+    metrics_callback = keras_utils.InHospitalMortalityMetrics(train_data=train_raw,
+                                                              val_data=val_raw,
+                                                              target_repl=(args.target_repl_coef > 0),
+                                                              batch_size=args.batch_size,
+                                                              verbose=args.verbose)
     # make sure save directory exists
     dirname = os.path.dirname(path)
     if not os.path.exists(dirname):
@@ -156,79 +157,41 @@ if args.mode == 'train':
                            append=True, separator=';')
 
     print("==> training")
-    model.fit_generator(generator=train_data_gen,
-                        steps_per_epoch=train_data_gen.steps,
-                        validation_data=val_data_gen,
-                        validation_steps=val_data_gen.steps,
-                        epochs=n_trained_chunks + args.epochs,
-                        initial_epoch=n_trained_chunks,
-                        callbacks=[metrics_callback, saver, csv_logger],
-                        verbose=args.verbose)
+    model.fit(x=train_raw[0],
+              y=train_raw[1],
+              validation_data=val_raw,
+              epochs=n_trained_chunks + args.epochs,
+              initial_epoch=n_trained_chunks,
+              callbacks=[metrics_callback, saver, csv_logger],
+              shuffle=True,
+              verbose=args.verbose,
+              batch_size=args.batch_size)
 
 elif args.mode == 'test':
 
     # ensure that the code uses test_reader
-    del train_data_gen
-    del val_data_gen
+    # ensure that the code uses test_reader
+    del train_reader
+    del val_reader
+    del train_raw
+    del val_raw
 
-    names = []
-    ts = []
-    labels = []
-    predictions = []
+    test_reader = InHospitalMortalityReader(dataset_dir=os.path.join(args.data, 'test'),
+                                            listfile=os.path.join(args.data, 'test_listfile.csv'),
+                                            period_length=48.0)
+    ret = preprocessing.load_data(test_reader, discretizer, normalizer, args.small_part,
+                          return_names=True)
 
-    if args.deep_supervision:
-        del train_data_loader
-        del val_data_loader
-        test_data_loader = common_utils.DeepSupervisionDataLoader(dataset_dir=os.path.join(args.data, 'test'),
-                                                                  listfile=os.path.join(args.data, 'test_listfile.csv'),
-                                                                  small_part=args.small_part)
-        test_data_gen = preprocessing.BatchGenDeepSupervision(test_data_loader, discretizer,
-                                                      normalizer, args.batch_size,
-                                                      shuffle=False, return_names=True)
+    data = ret["data"][0]
+    labels = ret["data"][1]
+    names = ret["names"]
 
-        for i in range(test_data_gen.steps):
-            print("\tdone {}/{}".format(i, test_data_gen.steps), end='\r')
-            ret = next(test_data_gen)
-            (x, y) = ret["data"]
-            cur_names = np.array(ret["names"]).repeat(x[0].shape[1], axis=-1)
-            cur_ts = ret["ts"]
-            for single_ts in cur_ts:
-                ts += single_ts
-
-            pred = model.predict(x, batch_size=args.batch_size)
-            for m, t, p, name in zip(x[1].flatten(), y.flatten(), pred.flatten(), cur_names.flatten()):
-                if np.equal(m, 1):
-                    labels.append(t)
-                    predictions.append(p)
-                    names.append(name)
-        print('\n')
-    else:
-        del train_reader
-        del val_reader
-        test_reader = DecompensationReader(dataset_dir=os.path.join(args.data, 'test'),
-                                           listfile=os.path.join(args.data, 'test_listfile.csv'))
-
-        test_data_gen = preprocessing.BatchGen(test_reader, discretizer,
-                                       normalizer, args.batch_size,
-                                       None, shuffle=False, return_names=True)  # put steps = None for a full test
-
-        for i in range(test_data_gen.steps):
-            print("predicting {} / {}".format(i, test_data_gen.steps), end='\r')
-            ret = next(test_data_gen)
-            x, y = ret["data"]
-            cur_names = ret["names"]
-            cur_ts = ret["ts"]
-
-            x = np.array(x)
-            pred = model.predict_on_batch(x)[:, 0]
-            predictions += list(pred)
-            labels += list(y)
-            names += list(cur_names)
-            ts += list(cur_ts)
-
+    predictions = model.predict(data, batch_size=args.batch_size, verbose=1)
+    predictions = np.array(predictions)[:, 0]
     metrics.print_metrics_binary(labels, predictions)
-    path = os.path.join(args.output_dir, 'test_predictions', os.path.basename(args.load_state)) + '.csv'
-    preprocessing.save_results(names, ts, predictions, labels, path)
+
+    path = os.path.join(args.output_dir, "test_predictions", os.path.basename(args.load_state)) + ".csv"
+    preprocessing.save_results(names, predictions, labels, path)
 
 else:
     raise ValueError("Wrong value for args.mode")
