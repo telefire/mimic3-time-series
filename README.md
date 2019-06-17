@@ -18,7 +18,13 @@ To extract time series data from MIMIC-III, you need to refer  https://github.co
 
 ## Requirments
 
+Under mimic3-time-series folder
+```
+export PYTHONPATH=. 
+```
+
 ### In-hospital mortality prediction
+
 Train
 ```
 python in_hospital_mortality/main.py --network models/lstm.py --dim 16 --timestep 1.0 --depth 2 --dropout 0.3 --mode train --batch_size 8 --output_dir in_hospital_mortality/
