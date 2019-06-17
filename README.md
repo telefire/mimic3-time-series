@@ -19,11 +19,16 @@ To extract time series data from MIMIC-III, you need to refer  https://github.co
 ## Requirments
 
 ### In-hospital mortality prediction
+Train
 ```
 python in_hospital_mortality/main.py --network models/lstm.py --dim 16 --timestep 1.0 --depth 2 --dropout 0.3 --mode train --batch_size 8 --output_dir in_hospital_mortality/
  
 ```
 
+Test
+```
+python in_hospital_mortality/main.py --network models/lstm.py --dim 16 --timestep 1.0 --depth 2 --dropout 0.3 --mode test --batch_size 8 --load_state in_hospital_mortality/keras_states/k_lstm.n16.d0.3.dep2.bs8.ts1.0.epoch27.test0.27868239298546116.state
+```
 ### Decompensation prediction
 
 
