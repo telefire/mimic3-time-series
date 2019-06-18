@@ -18,9 +18,13 @@ To extract time series data from MIMIC-III, you need to refer  https://github.co
 
 ## Requirments
 
-Under mimic3-time-series folder
+If you are using Python with a Terminal, you can set python environment by typing this under mimic3-time-series folder
 ```
 export PYTHONPATH=. 
+```
+If you are running with Jupyter Notebook, you can set python environment by typing this under mimic3-time-series folder
+```
+PYTHONPATH=. jupyter notebook --ip 0.0.0.0 --port 8003
 ```
 
 ### In-hospital mortality prediction
