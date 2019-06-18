@@ -17,7 +17,7 @@ def convert_to_dict(data, header, channel_info):
         channel = header[i]
         if len(channel_info[channel]['possible_values']) != 0:
             ret[i-1] = list(map(lambda x: (x[0], channel_info[channel]['values'][x[1]]), ret[i-1]))
-        ret[i-1] = list(map(lambda x: (float(x[0]), float(x[1])), ret[i-1]))
+        ret[i-1] = list(map(lambda x: (float(x[0]) if x[0] != '>60/minute' and x[0] != '>60/min retracts' else float(90), float(x[1]) if x[1] != '>60/minute' and x[1] != '>60/min retracts' else float(90)), ret[i-1]))
     return ret
 
 
