@@ -29,7 +29,7 @@ PYTHONPATH=. jupyter notebook --ip 0.0.0.0 --port 8003
 
 ### In-hospital mortality prediction#
 
-#####LSTM
+##### LSTM
 Train
 ```
 python in_hospital_mortality/main.py --network models/lstm.py --dim 16 --timestep 1.0 --depth 2 --dropout 0.3 --mode train --batch_size 8 --output_dir in_hospital_mortality/
