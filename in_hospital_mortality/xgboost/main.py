@@ -12,6 +12,7 @@ import numpy as np
 import argparse
 import json
 import xgboost as xgb
+import time
 
 
 def read_and_extract_features(reader, period, features):
@@ -101,7 +102,10 @@ def main():
         ret = {k: float(v) for k, v in ret.items()}
         json.dump(ret, res_file)
 
+    time_start = time.time()
     prediction = xgreg.predict(test_X)
+    time_elapse = time.time() - time_start
+    print("Processing time on Test set :", time_elapse, " s")
 
     with open(os.path.join(result_dir, 'test_{}.json'.format(file_name)), 'w') as res_file:
         ret = print_metrics_binary(test_y, prediction)

@@ -16,7 +16,7 @@ from utils import keras_utils
 from utils import common_utils
 
 from keras.callbacks import ModelCheckpoint, CSVLogger
-
+import time
 
 parser = argparse.ArgumentParser()
 common_utils.add_common_arguments(parser)
@@ -186,7 +186,12 @@ elif args.mode == 'test':
     labels = ret["data"][1]
     names = ret["names"]
 
+    time_start = time.time()
     predictions = model.predict(data, batch_size=args.batch_size, verbose=1)
+    time_elapse = time.time() - time_start
+    print("Processing time on Test set :", time_elapse, " s")
+
+
     predictions = np.array(predictions)[:, 0]
     metrics.print_metrics_binary(labels, predictions)
 

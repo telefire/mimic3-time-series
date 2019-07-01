@@ -3,7 +3,7 @@ MIMIC-III Time Series Models
 
 ## Motivation
 
-Exploring models that best suitable for time series tasks in clinical senarios.
+"Deep Learning" has been a buzz word since its big success in ImageNet 2012 competition, and greatly pushing forward the research frontier in computer vision, speech recognition and NLP since then, but for a larger portion of real world applications that deal with graph data and tabular data, such as social networks, recommendation systems and so on, deep learning techniques haven't shown significant advantages. In this work, we focus on time series tasks, which on one hand are in tablur data format, while on the other hand can be applied with both traditional machine learning techniques and deep learning techniques. We will compare the accuracy and speed performance of different modeling approaches and explore model structures that best suitable for time series tasks in Healthcare domain. 
 
 
 ## Data preparation
@@ -20,11 +20,11 @@ To extract time series data from MIMIC-III, you need to refer  https://github.co
 
 ### In-hospital mortality prediction#
 
-| Model | accuracy| AUC of ROC | AUC of PRC |min(+P, Se) | Processing Time on Test Set||
+| Model | accuracy| AUC of ROC | AUC of PRC |min(+P, Se) | Processing Time on Test Set (seconds)||
 -|---|---|---|---|---|---|
-|Logistic Regression|0.895|0.815|0.430|[0.428](https://github.com/telefire/mimic3-time-series/blob/master/experiment_ihm_lr.ipynb?short_path=9d140c8#L48)| to do|
-|XGBoost|0.894|0.822|0.479|[0.482](https://github.com/telefire/mimic3-time-series/blob/master/experiment_ihm_xgboost.ipynb?short_path=f9be529#L50)| to do|
-|LSTM|0.898|0.858|0.488|[0.485](https://github.com/telefire/mimic3-time-series/blob/master/ihm_test.ipynb?short_path=276ccf7L138)| to do|
+|Logistic Regression|0.895|0.815|0.430|[0.428](https://github.com/telefire/mimic3-time-series/blob/master/experiment_ihm_lr.ipynb?short_path=9d140c8#L48)| 0.006|
+|XGBoost|0.894|0.822|0.479|[0.482](https://github.com/telefire/mimic3-time-series/blob/master/experiment_ihm_xgboost.ipynb?short_path=f9be529#L50)| 2.34|
+|LSTM|0.898|0.858|0.488|[0.485](https://github.com/telefire/mimic3-time-series/blob/master/ihm_test.ipynb?short_path=276ccf7L138)| 29.19|
 
 ### Decompensation prediction
 
