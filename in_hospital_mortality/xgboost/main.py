@@ -86,7 +86,10 @@ def main():
                  reg_lambda=0.45,
                  subsample=0.6,
                  seed=42)
-    xgreg.fit(train_X, train_y)
+
+    eval_set = [(train_X, train_y) , (val_X, val_y)]
+
+    xgreg.fit(train_X, train_y, eval_metric = 'rmse', eval_set = eval_set, verbose = True, early_stopping_rounds = 40)
 
 
     result_dir = os.path.join(args.output_dir, 'results')
