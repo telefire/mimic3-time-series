@@ -3,7 +3,8 @@ from __future__ import print_function
 
 from utils.readers import PhenotypingReader
 from utils import common_utils
-from utils.metrics import print_metrics_binary
+#from utils.metrics import print_metrics_binary
+import utils.metrics
 from phenotyping.preprocessing import save_results
 from sklearn.preprocessing import Imputer, StandardScaler
 
