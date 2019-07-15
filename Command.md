@@ -51,9 +51,20 @@ python decompensation/main.py --network models/lstm.py --dim 16 --timestep 1.0 -
 python length_of_stay/main.py --network models/lstm.py --dim 16 --timestep 1.0 --depth 2 --dropout 0.3 --mode train --batch_size 8 --output_dir length_of_stay
 ```
 ### Phenotype classification
+
+##### LSTM
+Train
+
 ```
 python phenotyping/main.py --network models/lstm.py --dim 256 --timestep 1.0 --depth 1 --dropout 0.3 --mode train --batch_size 8 --output_dir phenotyping/
 ```
+
+##### XGBoost
+Train & Test
+```
+python phenotyping/xgboost/main.py  --output_dir phenotyping/xgboost/
+```
+
 
 ### MultiTask
 ```
