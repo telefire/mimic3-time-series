@@ -1,10 +1,10 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-from utils.readers import DecompensationReader
+from utils.readers import LengthOfStayReader
 from utils import common_utils
-from utils.metrics import print_metrics_binary
-from decompensation.preprocessing import save_results
+from utils.metrics import print_metrics_regression
+from length_of_stay.preprocessing import save_results
 from sklearn.preprocessing import Imputer, StandardScaler
 
 import os
@@ -40,20 +40,20 @@ def main():
     parser.add_argument('--features', type=str, default='all', help='specifies what features to extract',
                         choices=['all', 'len', 'all_but_len'])
     parser.add_argument('--data', type=str, help='Path to the data of in-hospital mortality task',
-                        default=os.path.join(os.path.dirname(__file__), '../../../data/decompensation/'))
+                        default=os.path.join(os.path.dirname(__file__), '../../../data/length-of-stay/'))
     parser.add_argument('--output_dir', type=str, help='Directory relative which all output files are stored',
                         default='.')
     args = parser.parse_args()
     print(args)
 
-    train_reader = DecompensationReader(dataset_dir=os.path.join(args.data, 'train'),
-                                        listfile=os.path.join(args.data, 'train_listfile.csv'))
+    train_reader = LengthOfStayReader(dataset_dir=os.path.join(args.data, 'train'),
+                                      listfile=os.path.join(args.data, 'train_listfile.csv'))
 
-    val_reader = DecompensationReader(dataset_dir=os.path.join(args.data, 'train'),
-                                      listfile=os.path.join(args.data, 'val_listfile.csv'))
+    val_reader = LengthOfStayReader(dataset_dir=os.path.join(args.data, 'train'),
+                                    listfile=os.path.join(args.data, 'val_listfile.csv'))
 
-    test_reader = DecompensationReader(dataset_dir=os.path.join(args.data, 'test'),
-                                       listfile=os.path.join(args.data, 'test_listfile.csv'))
+    test_reader = LengthOfStayReader(dataset_dir=os.path.join(args.data, 'test'),
+                                     listfile=os.path.join(args.data, 'test_listfile.csv'))
 
     n_train = min(100000, train_reader.get_number_of_examples())
     n_val = min(100000, val_reader.get_number_of_examples())
