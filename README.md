@@ -13,7 +13,7 @@ We do not provide the MIMIC-III data itself. You must acquire the data yourself 
 - numpy
 - pandas
 
-To extract time series data from MIMIC-III, you need to refer  https://github.com/YerevaNN/mimic3-benchmarks. **Please be sure also to cite the original [MIMIC-III Benchmarks paper](https://arxiv.org/abs/1703.07771) and the original [MIMIC-III paper](http://www.nature.com/articles/sdata201635).**
+To extract time series data from MIMIC-III, you need to refer  https://github.com/YerevaNN/mimic3-benchmarks. **Please be sure also to cite the original [MIMIC-III Benchmarks paper](https://www.nature.com/articles/s41597-019-0103-9) and the original [MIMIC-III paper](http://www.nature.com/articles/sdata201635).**
 
 
 ## Experiments
