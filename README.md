@@ -38,4 +38,4 @@ For training and testing models for these 4 time series tasks, please refer to [
 
 ### Questions
 
-Please feel free to reach me (Yanke Hu, yhu@humana.com) or Raj (Raj Subramanian, rsubramanian5@humana.com) for any questions or just open a github issue.
+Please feel free to reach me (Yanke Hu) or Raj (Raj Subramanian) for any questions or just open a github issue.
