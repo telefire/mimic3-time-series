@@ -27,6 +27,8 @@ parser.add_argument('--output_dir', type=str, help='Directory relative which all
 args = parser.parse_args()
 print(args)
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
 if args.small_part:
     args.save_every = 2**30
 
