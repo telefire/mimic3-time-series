@@ -217,12 +217,17 @@ elif args.mode == 'test':
     else:
         del train_reader
         del val_reader
-        test_reader = DecompensationReader(dataset_dir=os.path.join(args.data, 'test'),
+        test_reader = LengthOfStayReader(dataset_dir=os.path.join(args.data, 'test'),
                                            listfile=os.path.join(args.data, 'test_listfile.csv'))
 
-        test_data_gen = preprocessing.BatchGen(test_reader, discretizer,
-                                       normalizer, args.batch_size,
-                                       None, shuffle=False, return_names=True)  # put steps = None for a full test
+        test_data_gen = preprocessing.BatchGen(reader=test_reader,
+                               discretizer=discretizer,
+                               normalizer=normalizer,
+                               partition=args.partition,
+                               batch_size=args.batch_size,
+                               steps=None,  # put steps = None for a full test
+                               shuffle=False,
+                               return_names=True)
 
         for i in range(test_data_gen.steps):
             print("predicting {} / {}".format(i, test_data_gen.steps), end='\r')
