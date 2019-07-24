@@ -53,21 +53,6 @@ Train & Test
 python decompensation/xgboost/main.py  --output_dir decompensation/xgboost/
 ```
 
-
-### Length of stay prediction
-
-##### LSTM
-Train
-```
-python length_of_stay/main.py --network models/lstm.py --dim 16 --timestep 1.0 --depth 2 --dropout 0.3 --mode train --batch_size 8 --output_dir length_of_stay
-```
-
-##### XGBoost
-Train & Test
-```
-python length_of_stay/xgboost/main.py  --output_dir length_of_stay/xgboost/
-```
-
 ### Phenotype classification
 
 ##### LSTM
@@ -81,6 +66,21 @@ python phenotyping/main.py --network models/lstm.py --dim 256 --timestep 1.0 --d
 Train & Test
 ```
 python phenotyping/xgboost/main.py  --output_dir phenotyping/xgboost/
+```
+
+
+### Length of stay prediction
+
+##### LSTM
+Train
+```
+python length_of_stay/main.py --network models/lstm.py --dim 16 --timestep 1.0 --depth 2 --dropout 0.3 --mode train --batch_size 8 --output_dir length_of_stay
+```
+
+##### XGBoost
+Train & Test
+```
+python length_of_stay/xgboost/main.py  --output_dir length_of_stay/xgboost/
 ```
 
 
