@@ -3,8 +3,7 @@ from __future__ import print_function
 
 from utils.readers import PhenotypingReader
 from utils import common_utils
-#from utils.metrics import print_metrics_binary
-import utils.metrics
+from utils.metrics import print_metrics_multilabel
 from phenotyping.preprocessing import save_results
 from sklearn.preprocessing import Imputer, StandardScaler
 
@@ -37,8 +36,10 @@ def main():
     args = parser.parse_args()
     print(args)
 
+    
     train_reader = PhenotypingReader(dataset_dir=os.path.join(args.data, 'train'),
                                      listfile=os.path.join(args.data, 'train_listfile.csv'))
+                                     
 
     val_reader = PhenotypingReader(dataset_dir=os.path.join(args.data, 'train'),
                                    listfile=os.path.join(args.data, 'val_listfile.csv'))
@@ -47,6 +48,8 @@ def main():
                                     listfile=os.path.join(args.data, 'test_listfile.csv'))
 
     #print("shape->",train_reader.read_example(100)['X'].shape)
+
+    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
     print('Reading data and extracting features ...')
     (train_X, train_y, train_names, train_ts) = read_and_extract_features(train_reader, args.period, args.features)
@@ -101,37 +104,41 @@ def main():
 
         eval_set = [(train_X, train_y[:, task_id]) , (val_X, val_y[:, task_id])]
 
-        xgreg.fit(train_X, train_y[:, task_id], eval_metric = 'rmse', eval_set = eval_set, verbose = True, early_stopping_rounds = 40)
+        xgreg.fit(train_X, train_y[:, task_id], eval_metric = 'rmse', eval_set = eval_set, verbose = True, early_stopping_rounds = 5)
 
         train_preds = xgreg.predict(train_X)
-        train_activations[:, task_id] = train_preds[:, 1]
+
+        print("train_preds shape ", train_preds.shape)
+        print("train_activations shape", train_activations.shape)
+
+        train_activations[:, task_id] = train_preds
 
         val_preds = xgreg.predict(val_X)
-        val_activations[:, task_id] = val_preds[:, 1]
+        val_activations[:, task_id] = val_preds
 
         time_start = time.time()
         test_preds = xgreg.predict(test_X)
         time_elapse = time.time() - time_start
         print("Processing time on Test set :", time_elapse, " s for task ", task_id)
-        test_activations[:, task_id] = test_preds[:, 1]
+        test_activations[:, task_id] = test_preds
 
-    with open(os.path.join(result_dir, 'train_{}.json'.format(model_name)), 'w') as f:
-        ret = metrics.print_metrics_multilabel(train_y, train_activations)
+    with open(os.path.join(result_dir, 'train_{}.json'.format(file_name)), 'w') as f:
+        ret = print_metrics_multilabel(train_y, train_activations)
         ret = {k: float(v) for k, v in ret.items() if k != 'auc_scores'}
         json.dump(ret, f)
 
-    with open(os.path.join(result_dir, 'val_{}.json'.format(model_name)), 'w') as f:
-        ret = metrics.print_metrics_multilabel(val_y, val_activations)
+    with open(os.path.join(result_dir, 'val_{}.json'.format(file_name)), 'w') as f:
+        ret = print_metrics_multilabel(val_y, val_activations)
         ret = {k: float(v) for k, v in ret.items() if k != 'auc_scores'}
         json.dump(ret, f)
 
-    with open(os.path.join(result_dir, 'test_{}.json'.format(model_name)), 'w') as f:
-        ret = metrics.print_metrics_multilabel(test_y, test_activations)
+    with open(os.path.join(result_dir, 'test_{}.json'.format(file_name)), 'w') as f:
+        ret = print_metrics_multilabel(test_y, test_activations)
         ret = {k: float(v) for k, v in ret.items() if k != 'auc_scores'}
         json.dump(ret, f)
 
     save_results(test_names, test_ts, test_activations, test_y,
-                 os.path.join(args.output_dir, 'predictions', model_name + '.csv'))
+                 os.path.join(args.output_dir, 'predictions', file_name + '.csv'))
 
 
 if __name__ == '__main__':
