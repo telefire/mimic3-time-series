@@ -31,6 +31,12 @@ Train & Test
 python in_hospital_mortality/xgboost/main.py  --output_dir in_hospital_mortality/xgboost/
 ```
 
+##### XGBoost Raw
+Train & Test
+```
+python in_hospital_mortality/xgboost_raw/main.py  --timestep 1.0  --output_dir in_hospital_mortality/xgboost_raw/
+```
+
 ##### Logistic Regression
 Train & Test
 ```
