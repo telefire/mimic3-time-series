@@ -26,12 +26,8 @@ To extract time series data from MIMIC-III, you need to refer  https://github.co
 |XGBoost|0.894|0.822|0.479|[0.482](https://github.com/telefire/mimic3-time-series/blob/master/experiment_ihm_xgboost.ipynb?short_path=f9be529#L50)| 2.34|
 |LSTM|0.898|0.858|0.488|[0.485](https://github.com/telefire/mimic3-time-series/blob/master/ihm_test.ipynb?short_path=276ccf7L138)| 29.19|
 
-### Decompensation prediction
 
-### Length of stay prediction
 ### Phenotype classification
-### MultiTask
-
 
 
 For training and testing models for these 4 time series tasks, please refer to [Command.md](Command.md) , there are also jupyter notebooks showing running logs.

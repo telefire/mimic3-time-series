@@ -43,22 +43,6 @@ Train & Test
 python in_hospital_mortality/lr/main.py --l2 --C 0.001 --output_dir in_hospital_mortality/lr/
 ```
 
-
-### Decompensation prediction
-
-##### LSTM
-Train
-
-```
-python decompensation/main.py --network models/lstm.py --dim 16 --timestep 1.0 --depth 2 --dropout 0.3 --mode train --batch_size 8 --output_dir decompensation
-```
-
-##### XGBoost
-Train & Test
-```
-python decompensation/xgboost/main.py  --output_dir decompensation/xgboost/
-```
-
 ### Phenotype classification
 
 ##### LSTM
@@ -75,31 +59,5 @@ python phenotyping/xgboost/main.py  --output_dir phenotyping/xgboost/
 ```
 
 
-### Length of stay prediction
 
-##### LSTM
-Train
-```
-python length_of_stay/main.py --network models/lstm.py --dim 16 --timestep 1.0 --depth 2 --dropout 0.3 --mode train --batch_size 8 --output_dir length_of_stay
-```
-
-##### XGBoost
-Train & Test
-```
-python length_of_stay/xgboost/main.py  --output_dir length_of_stay/xgboost/
-```
-
-
-### MultiTask
-
-##### LSTM
-Train
-```
-python multitask/main.py --network models/multitask_lstm.py --dim 512  --timestep 1.0  --dropout 0.3 --mode train --batch_size 16  --ihm_C 0.2 --decomp_C 1.0 --los_C 1.5 --pheno_C 1.0   --output_dir multitask/
-```
-
-##### XGBoost
-Train & Test
-```
-python multitask/xgboost/main.py  --output_dir multitask/xgboost/
 ```
