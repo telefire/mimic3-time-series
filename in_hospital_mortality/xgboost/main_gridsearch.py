@@ -13,8 +13,8 @@ import argparse
 import json
 import xgboost as xgb
 import time
-from sklearn.grid_search import GridSearchCV
-
+#from sklearn.grid_search import GridSearchCV
+from sklearn.model_selection import GridSearchCV
 def read_and_extract_features(reader, period, features):
     print("number of get_number_of_examples" , reader.get_number_of_examples())
     ret = common_utils.read_chunk(reader, reader.get_number_of_examples())
@@ -101,7 +101,7 @@ def main():
                  tree_method='gpu_hist',
                  seed=42)
 
-    gsearch = GridSearchCV(xgreg, param_grid=parameters, scoring='rmse', cv=3)
+    gsearch = GridSearchCV(xgreg, param_grid=parameters, scoring='neg_mean_squared_error', cv=3)
 
     gsearch.fit(train_X, train_y)
 
