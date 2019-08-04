@@ -13,7 +13,7 @@ import argparse
 import json
 import xgboost as xgb
 import time
-
+from sklearn.grid_search import GridSearchCV
 
 def read_and_extract_features(reader, period, features):
     print("number of get_number_of_examples" , reader.get_number_of_examples())
@@ -76,6 +76,17 @@ def main():
 
     file_name = 'xgboost_{}.{}.'.format(args.period, args.features)
 
+    parameters = {
+                  'gamma': [0, 0.5, 1, 1.5, 2, 5],
+                  'max_depth': [3, 5, 10, 15, 20, 25],
+                  'min_child_weight': [0, 1.5, 2, 5, 10, 20],                  
+                  'learning_rate': [0.01, 0.02, 0.05, 0.07, 0.1, 0.15],
+                  'n_estimators': [500, 1000, 2000, 3000, 5000, 10000, 20000],
+                  'reg_alpha': [0, 0.25, 0.45, 0.5, 0.75, 1],
+                  'reg_lambda': [0.2, 0.4, 0.6, 0.8, 1],                                    
+                  'max_delta_step': [0, 0.2, 0.6, 1, 2],
+                  'subsample': [0.6, 0.7, 0.8, 0.85, 0.95]}
+
     xgreg = xgb.XGBRegressor(colsample_bytree=0.4,
                  gamma=0,                 
                  learning_rate=0.07,
@@ -90,36 +101,16 @@ def main():
                  tree_method='gpu_hist',
                  seed=42)
 
-    eval_set = [(train_X, train_y) , (val_X, val_y)]
+    gsearch = GridSearchCV(xgreg, param_grid=parameters, scoring='rmse', cv=3)
 
-    xgreg.fit(train_X, train_y, eval_metric = 'rmse', eval_set = eval_set, verbose = True, early_stopping_rounds = 40)
+    gsearch.fit(train_X, train_y)
 
+    print("Best score: %0.3f" % gsearch.best_score_)
+    print("Best parameters set:")
+    best_parameters = gsearch.best_estimator_.get_params()
+    for param_name in sorted(parameters.keys()):
+        print("\t%s: %r" % (param_name, best_parameters[param_name]))
 
-    result_dir = os.path.join(args.output_dir, 'results')
-    common_utils.create_directory(result_dir)
-
-    with open(os.path.join(result_dir, 'train_{}.json'.format(file_name)), 'w') as res_file:
-        ret = print_metrics_binary(train_y, xgreg.predict(train_X))
-        ret = {k : float(v) for k, v in ret.items()}
-        json.dump(ret, res_file)
-
-    with open(os.path.join(result_dir, 'val_{}.json'.format(file_name)), 'w') as res_file:
-        ret = print_metrics_binary(val_y, xgreg.predict(val_X))
-        ret = {k: float(v) for k, v in ret.items()}
-        json.dump(ret, res_file)
-
-    time_start = time.time()
-    prediction = xgreg.predict(test_X)
-    time_elapse = time.time() - time_start
-    print("Processing time on Test set :", time_elapse, " s")
-
-    with open(os.path.join(result_dir, 'test_{}.json'.format(file_name)), 'w') as res_file:
-        ret = print_metrics_binary(test_y, prediction)
-        ret = {k: float(v) for k, v in ret.items()}
-        json.dump(ret, res_file)
-
-    save_results(test_names, prediction, test_y,
-                 os.path.join(args.output_dir, 'predictions', file_name + '.csv'))
 
 
 if __name__ == '__main__':
