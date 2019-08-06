@@ -37,6 +37,17 @@ Train & Test
 python in_hospital_mortality/xgboost_raw/main.py  --timestep 1.0  --output_dir in_hospital_mortality/xgboost_raw/
 ```
 
+##### LightGBM
+Train & Test
+```
+python in_hospital_mortality/lightgbm/main.py  --output_dir in_hospital_mortality/lightgbm/
+```
+
+##### LightGBM Raw
+Train & Test
+```
+python in_hospital_mortality/lightgbm_raw/main.py  --timestep 1.0  --output_dir in_hospital_mortality/lightgbm_raw/
+```
 ##### Logistic Regression
 Train & Test
 ```
@@ -58,6 +69,14 @@ Train & Test
 python phenotyping/xgboost/main.py  --output_dir phenotyping/xgboost/
 ```
 
+##### LightGBM
+Train & Test
+```
+python phenotyping/lightgbm/main.py  --output_dir phenotyping/lightgbm/
+```
 
-
+##### XGBoost Raw
+Train & Test
+```
+python phenotyping/xgboost_raw/main.py --timestep 1.0  --output_dir phenotyping/xgboost_raw/
 ```
