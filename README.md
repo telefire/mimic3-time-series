@@ -18,19 +18,32 @@ To extract time series data from MIMIC-III, you need to refer  https://github.co
 
 ## Experiments
 
-### In-hospital mortality prediction#
+### In-hospital mortality prediction
 
-| Model | accuracy| AUC of ROC | AUC of PRC |min(+P, Se) | Processing Time on Test Set (seconds)||
--|---|---|---|---|---|---|
-|Logistic Regression|0.895|0.815|0.430|[0.428](https://github.com/telefire/mimic3-time-series/blob/master/experiment_ihm_lr.ipynb?short_path=9d140c8#L48)| 0.006|
-|XGBoost|0.894|0.822|0.479|[0.482](https://github.com/telefire/mimic3-time-series/blob/master/experiment_ihm_xgboost.ipynb?short_path=f9be529#L50)| 2.34|
-|LSTM|0.898|0.858|0.488|[0.485](https://github.com/telefire/mimic3-time-series/blob/master/ihm_test.ipynb?short_path=276ccf7L138)| 29.19|
+<div align="center">
+	<img src="ihm_graph.png" width="700px"/>
+	<p> LSTM  training VS LightGBM training</p>
+</div>
 
+<div align="center">
+	<img src="ihm_stat.png" width="700px"/>
+	<p> Accuracy comparison and Speed Comparison </p>
+</div>
 
 ### Phenotype classification
 
+<div align="center">
+	<img src="phenotype_graph.png" width="700px"/>
+	<p> LSTM  training VS LightGBM training</p>
+</div>
 
-For training and testing models for these 4 time series tasks, please refer to [Command.md](Command.md) , there are also jupyter notebooks showing running logs.
+<div align="center">
+	<img src="phenotype_stat.png" width="700px"/>
+	<p> Accuracy comparison and Speed Comparison </p>
+</div>
+
+
+For training and testing models for these 2 time series tasks, please refer to [Command.md](Command.md) , there are also jupyter notebooks showing running logs.
 
 ### Questions
 
